@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fund-transfer-service
+  namespace: fintech-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fund-transfer-service
+  template:
+    metadata:
+      labels:
+        app: fund-transfer-service
+    spec:
+      containers:
+        - name: fund-transfer-service
+          image: fund-transfer-service:local
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8000
+          env:
+            - name: FEE_SERVICE_URL
+              value: http://fee-service:8000
+            - name: ACCOUNT_SERVICE_URL
+              value: http://account-service:8000
+            - name: JOURNAL_SERVICE_URL
+              value: http://journal-service:8000
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fund-transfer-service
+  namespace: fintech-demo
+spec:
+  selector:
+    app: fund-transfer-service
+  ports:
+    - port: 8000
+      targetPort: 8000

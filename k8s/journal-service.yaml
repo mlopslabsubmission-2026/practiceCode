@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: journal-service
+  namespace: fintech-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: journal-service
+  template:
+    metadata:
+      labels:
+        app: journal-service
+    spec:
+      containers:
+        - name: journal-service
+          image: journal-service:local
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8000
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: journal-service
+  namespace: fintech-demo
+spec:
+  selector:
+    app: journal-service
+  ports:
+    - port: 8000
+      targetPort: 8000

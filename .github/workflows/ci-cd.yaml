@@ -1,0 +1,62 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - fee-service
+          - account-service
+          - journal-service
+          - fund-transfer-service
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r services/${{ matrix.service }}/requirements.txt pytest
+      - run: pytest services/${{ matrix.service }}
+
+  build-and-push:
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix:
+        service:
+          - fee-service
+          - account-service
+          - journal-service
+          - fund-transfer-service
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: services/${{ matrix.service }}
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/${{ matrix.service }}:latest
+            ghcr.io/${{ github.repository_owner }}/${{ matrix.service }}:${{ github.sha }}
+
+  # There is deliberately no "deploy" job here. This pipeline's build-and-push
+  # stage publishes images to a registry any cluster can pull from — but
+  # GitHub's hosted runners have no network path to a student's personal
+  # Codespace or a laptop's local cluster, so "kubectl apply" against this
+  # demo's Kubernetes setup has to run where the cluster actually lives:
+  # locally, by hand, per the README. In a real deployment this job would
+  # instead run against a cluster the runner *can* reach (a cloud-hosted one,
+  # or a self-hosted runner inside the same network) with `kubectl apply -f k8s/`.

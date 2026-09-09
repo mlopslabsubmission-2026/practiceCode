@@ -1,0 +1,32 @@
+services:
+  fee-service:
+    build: ./services/fee-service
+    image: fee-service:local
+    ports:
+      - "8001:8000"
+
+  account-service:
+    build: ./services/account-service
+    image: account-service:local
+    ports:
+      - "8002:8000"
+
+  journal-service:
+    build: ./services/journal-service
+    image: journal-service:local
+    ports:
+      - "8003:8000"
+
+  fund-transfer-service:
+    build: ./services/fund-transfer-service
+    image: fund-transfer-service:local
+    ports:
+      - "8000:8000"
+    environment:
+      FEE_SERVICE_URL: http://fee-service:8000
+      ACCOUNT_SERVICE_URL: http://account-service:8000
+      JOURNAL_SERVICE_URL: http://journal-service:8000
+    depends_on:
+      - fee-service
+      - account-service
+      - journal-service
