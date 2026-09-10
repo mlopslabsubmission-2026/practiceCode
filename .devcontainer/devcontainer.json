@@ -2,10 +2,9 @@
   "name": "Fintech Cloud Demo",
   "image": "mcr.microsoft.com/devcontainers/python:3.12",
   "features": {
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
-    "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {}
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
   },
-  "postCreateCommand": "pip install --user -r requirements-dev.txt",
+  "postCreateCommand": "bash .devcontainer/setup.sh",
   "forwardPorts": [8000, 8001, 8002, 8003],
   "portsAttributes": {
     "8000": { "label": "fund-transfer-service" },
