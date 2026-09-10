@@ -13,5 +13,5 @@ def health():
 
 @app.get("/fee")
 def get_fee(amount: float = Query(..., gt=0)):
-    fee = max(MIN_FEE, round(amount * FEE_RATE, 2))
+    fee = max(MIN_FEE, round(amount * FEE_RATE, 3))
     return {"amount": amount, "fee": fee, "currency" : "INR"}
