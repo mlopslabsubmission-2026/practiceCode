@@ -167,6 +167,60 @@ walk through it as a diagram, not just a file:
    `kubectl apply` against a cluster the runner *can* reach — a cloud
    cluster, not a laptop.
 
+### Live run (instructor only)
+
+Only the repo owner can push to `main` — students' own Codespaces have read
+access, not write, so this part is done by the instructor, screen-shared.
+Students can also open the Actions tab themselves in their own browser
+and watch it run live in parallel — it's a public repo, so no push access
+is needed to *watch*, only to trigger.
+
+**1. Make a small, real, additive change** — in
+`services/fee-service/main.py`, change the return line:
+
+```python
+return {"amount": amount, "fee": fee}
+```
+
+to:
+
+```python
+return {"amount": amount, "fee": fee, "currency": "INR"}
+```
+
+**2. Add a test for it**, in `services/fee-service/test_main.py`:
+
+```python
+def test_fee_includes_currency():
+    resp = client.get("/fee", params={"amount": 100})
+    assert resp.json()["currency"] == "INR"
+```
+
+**3. Commit and push:**
+
+```bash
+git add services/fee-service
+git commit -m "Add currency field to fee response"
+git push
+```
+
+**4. Open the Actions tab** —
+`github.com/mlopslabsubmission-2026/practiceCode/actions` — and watch live:
+all four `test` matrix jobs run (point out that `account-service`,
+`journal-service`, and `fund-transfer-service` re-run too, even though
+their code didn't change — the matrix tests every service on every push,
+not just the one that changed), then `build-and-push` publishes updated
+images once `test` is fully green.
+
+**Optional, if time allows — show it fail:** change `FEE_RATE` in
+`fee-service/main.py` *without* updating the existing fee assertions in
+`test_main.py`, then push. The `test` job goes red, and `build-and-push`
+never runs at all — `needs: test` in the workflow file is what's enforcing
+that. This is the concrete version of "CI/CD gives regulators evidence,
+not intent" from the TSB case: a broken change physically cannot reach
+`build-and-push` here, it isn't a matter of someone remembering to check.
+Revert the change afterward so the repo is clean for the next run.
+
 This is the same shape as the slide deck's CI/CD pipeline (build → test →
 deliver → deploy) — it's worth naming out loud which stage students just
 ran by hand (`kubectl apply`, in Part B) that a real pipeline would run for
