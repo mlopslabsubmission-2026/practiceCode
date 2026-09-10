@@ -1,8 +1,10 @@
 {
   "name": "Fintech Cloud Demo",
-  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12-bookworm",
   "features": {
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "moby": false
+    }
   },
   "postCreateCommand": "bash .devcontainer/setup.sh",
   "forwardPorts": [8000, 8001, 8002, 8003],
