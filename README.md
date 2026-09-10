@@ -171,12 +171,13 @@ walk through it as a diagram, not just a file:
 
 Only the repo owner can push to `main` — students' own Codespaces have read
 access, not write, so this part is done by the instructor, screen-shared.
-Students can also open the Actions tab themselves in their own browser
-and watch it run live in parallel — it's a public repo, so no push access
-is needed to *watch*, only to trigger.
+Students can also open the Actions tab themselves in their own browser and
+watch it run live in parallel — it's a public repo, so no push access is
+needed to *watch*, only to trigger. Four steps: green, see the build,
+red, recover.
 
-**1. Make a small, real, additive change** — in
-`services/fee-service/main.py`, change the return line:
+**Step 1 — a clean, additive change.** In `services/fee-service/main.py`,
+change the return line:
 
 ```python
 return {"amount": amount, "fee": fee}
@@ -188,7 +189,7 @@ to:
 return {"amount": amount, "fee": fee, "currency": "INR"}
 ```
 
-**2. Add a test for it**, in `services/fee-service/test_main.py`:
+Add a test for it in `services/fee-service/test_main.py`:
 
 ```python
 def test_fee_includes_currency():
@@ -196,7 +197,7 @@ def test_fee_includes_currency():
     assert resp.json()["currency"] == "INR"
 ```
 
-**3. Commit and push:**
+Commit and push:
 
 ```bash
 git add services/fee-service
@@ -204,27 +205,37 @@ git commit -m "Add currency field to fee response"
 git push
 ```
 
-**4. Open the Actions tab** —
-`github.com/mlopslabsubmission-2026/practiceCode/actions` — and watch live:
-all four `test` matrix jobs run (point out that `account-service`,
+Open `github.com/mlopslabsubmission-2026/practiceCode/actions` and watch
+live: all four `test` matrix jobs run (point out that `account-service`,
 `journal-service`, and `fund-transfer-service` re-run too, even though
 their code didn't change — the matrix tests every service on every push,
-not just the one that changed), then `build-and-push` publishes updated
-images once `test` is fully green.
+not just the one that changed), then `build-and-push` runs once `test` is
+fully green.
 
-**Optional, if time allows — show it fail:** change `FEE_RATE` in
-`fee-service/main.py` *without* updating the existing fee assertions in
-`test_main.py`, then push. The `test` job goes red, and `build-and-push`
-never runs at all — `needs: test` in the workflow file is what's enforcing
-that. This is the concrete version of "CI/CD gives regulators evidence,
-not intent" from the TSB case: a broken change physically cannot reach
-`build-and-push` here, it isn't a matter of someone remembering to check.
-Revert the change afterward so the repo is clean for the next run.
+**Step 2 — show the actual build.** Once `build-and-push` finishes, go to
+the repo's main page — the right sidebar shows a **Packages** box once
+anything's been published from it. Click into `fee-service`: there's the
+image that job just built, tagged both `latest` and with the commit SHA
+that's currently on screen in the Actions log. This is the artifact the
+whole pipeline exists to produce — worth pausing on, since everything
+before this was in service of getting here safely.
+
+**Step 3 — show it fail.** Change `FEE_RATE` in `fee-service/main.py`
+*without* updating the existing fee assertions in `test_main.py`, then
+push. The `test` job goes red, and `build-and-push` never runs at all —
+`needs: test` in the workflow file is what enforces that; nothing shipped,
+and nothing had to remember to stop it. Point at the greyed-out
+`build-and-push` job in the Actions UI as the visible proof.
+
+**Step 4 — recover.** Revert the `FEE_RATE` change (or fix the test
+assertions to match it, whichever makes a better discussion), then push
+once more and confirm the run goes green end to end. Leave the repo in
+this clean state before the next cohort runs this same session.
 
 This is the same shape as the slide deck's CI/CD pipeline (build → test →
-deliver → deploy) — it's worth naming out loud which stage students just
-ran by hand (`kubectl apply`, in Part B) that a real pipeline would run for
-them automatically.
+deliver → deploy) — worth naming out loud which stage students just ran by
+hand (`kubectl apply`, in Part B) that a real pipeline would run for them
+automatically.
 
 ---
 
