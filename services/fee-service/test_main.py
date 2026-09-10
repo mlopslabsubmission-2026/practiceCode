@@ -22,3 +22,8 @@ def test_fee_uses_percentage_for_large_amounts():
 def test_fee_rejects_non_positive_amount():
     resp = client.get("/fee", params={"amount": 0})
     assert resp.status_code == 422
+
+
+def test_fee_includes_currency():
+    resp = client.get("/fee", params={"amount": 100})
+    assert resp.json()["currency"] == "INR"
