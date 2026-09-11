@@ -1,7 +1,6 @@
-# Fintech Cloud Demo — Fund Transfer
+# Cloud Demo — Fund Transfer
 
-A working version of the composite/atomic microservices diagram from the
-"API Banking" slide: a **Fund Transfer** service that orchestrates three
+A **Fund Transfer** service that orchestrates three
 atomic services — **Fee**, **Account**, **Journal** — over HTTP. Same code
 runs three ways: directly, in Docker Compose, and in Kubernetes.
 
@@ -35,7 +34,6 @@ begin.
 | 10 min | Part A — Docker & Compose |
 | 25 min | Part B — Kubernetes |
 | 10 min | Part C — CI/CD walkthrough |
-| 5 min | Wrap-up / Q&A |
 
 ---
 
@@ -92,8 +90,7 @@ docker compose down
 
 ## Part B — Kubernetes
 
-Start a local cluster (~60–90 seconds — this is a good moment to talk
-through what a control plane actually spins up while it runs):
+Start a local cluster (~60–90 seconds):
 
 ```bash
 minikube start --driver=docker
