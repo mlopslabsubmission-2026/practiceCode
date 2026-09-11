@@ -3,8 +3,7 @@ from pydantic import BaseModel, Field
 
 app = FastAPI(title="Account Service")
 
-# In-memory ledger, reset every time the service restarts — good enough for a
-# classroom demo, not for anything real. Meera's balance is deliberately low
+#Meera's balance is deliberately low
 # so a debit past it demonstrates the insufficient-funds error path.
 accounts = {
     "ACC1001": {"name": "Asha Rao", "balance": 5000.0},
